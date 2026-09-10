@@ -16,9 +16,6 @@ class SQLAlchemyUserRepository(UserRepository):
         await self._session.flush()
         return _to_entity(model)
 
-    async def get_by_id(self, user_id: int) -> User | None:
-        raise NotImplementedError
-
     async def get_by_email(self, email: str) -> User | None:
         result = await self._session.execute(
             select(UserModel).where(UserModel.email == email)
@@ -28,8 +25,20 @@ class SQLAlchemyUserRepository(UserRepository):
             return None
         return _to_entity(model)
 
+    async def get_by_id(self, user_id: int) -> User | None:
+        result = await self._session.get(UserModel, user_id)
+        if result is None:
+            return None
+        return _to_entity(result)
+
     async def delete(self, user_id: int) -> bool:
-        raise NotImplementedError
+        result = await self._session.get(UserModel, user_id)
+        if result is None:
+            return False
+
+        await self._session.delete(result)
+        await self._session.flush()
+        return True
 
 
 def _to_entity(model: UserModel) -> User:
