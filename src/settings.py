@@ -7,8 +7,12 @@ class Settings(BaseSettings):
     model_config = SettingsConfigDict(env_file=".env", env_file_encoding="utf-8")
 
     database_url: str = os.getenv(
-        "DATABASE_URL", "postgresql+asyncpg://postgres:postgres@localhost:5433/auth_db"
-    )
+        "POSTGRES_CONNECTION_STRING",
+        os.getenv(
+            "DATABASE_URL",
+            "postgresql+asyncpg://postgres:postgres@localhost:5433/auth_db",
+        ),
+    ).replace("postgres://", "postgresql+asyncpg://", 1)
 
     jwt_secret: str = "change-me"
     jwt_algorithm: str = "HS256"
