@@ -1,7 +1,9 @@
 import uvicorn
 
 from src.fastapi import create_app
+from src.infrastructure.tracing.logging import configure_logging
 
+configure_logging()
 app = create_app()
 
 if __name__ == "__main__":
